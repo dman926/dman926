@@ -1,16 +1,21 @@
-### Hi there 👋
+# Hi there 👋
 
-<!--
-**dman926/dman926** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
+I am a:
+- software developer
+- microeletronics, 3D printing, and DIY enthusiast
+- keyboard collector
 
-Here are some ideas to get you started:
-
-- 🔭 I’m currently working on ...
-- 🌱 I’m currently learning ...
-- 👯 I’m looking to collaborate on ...
-- 🤔 I’m looking for help with ...
-- 💬 Ask me about ...
-- 📫 How to reach me: ...
-- 😄 Pronouns: ...
-- ⚡ Fun fact: ...
--->
+<p align="center">
+  <a href="https://git.io/streak-stats">
+    <img alt="dman926's GitHub Streak" src="http://github-readme-streak-stats.herokuapp.com?user=dman926&theme=tokyonight&hide_border=true&date_format=%5BY%20%5DM%20j" />
+  </a>
+</p>
+<p align="center">
+  <img alt="dman926's GitHub stats" src="https://github-readme-stats.vercel.app/api?username=dman926&theme=tokyonight" />
+</p>
+<p align="center">
+  <img alt="dman926's Top Langs" src="https://github-readme-stats.vercel.app/api/top-langs/?username=dman926&theme=tokyonight" />
+</p>
+<p align="center">
+  <img alt="dman926's trophies" src="https://github-profile-trophy.vercel.app/?username=dman926&theme=tokyonight" />
+</p>
