@@ -7,7 +7,7 @@ I am a:
 
 <p align="center">
   <a href="https://git.io/streak-stats">
-    <img alt="dman926's GitHub Streak" src="http://github-readme-streak-stats.herokuapp.com?user=dman926&theme=tokyonight&hide_border=true&date_format=%5BY%20%5DM%20j" />
+    <img src="https://streak-stats.demolab.com?user=dman926&theme=tokyonight&date_format=%5BY%20%5DM%20j" alt="GitHub Streak" />
   </a>
 </p>
 <p align="center">
