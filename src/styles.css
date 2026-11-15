@@ -319,7 +319,8 @@ body {
   overscroll-behavior: contain;
 }
 .prompt {
-  margin-right: 1ch;
+  display: inline-flex;
+  white-space: pre;
   user-select: none;
 }
 .terminal-input > .prompt {
