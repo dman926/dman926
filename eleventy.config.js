@@ -7,6 +7,7 @@ export default function (eleventyConfig) {
     "src/_assets/favicon.svg": "favicon.svg",
     "src/_assets/favicon.ico": "favicon.ico",
     "src/_assets/apple-touch-icon.png": "apple-touch-icon.png",
+    "src/_assets/robots.txt": "robots.txt",
     "src/_assets/Dennis_James_Stelmach_Resume.pdf": "Dennis_James_Stelmach_Resume.pdf",
   });
 
