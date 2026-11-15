@@ -1,3 +1,4 @@
+{% from "components/prompt.njk" import prompt %}
 {% macro terminal(whoami, contact, skills, projects) %}
 <div class="terminal reveal" id="terminal">
   <div class="terminal-dots">
@@ -6,13 +7,14 @@
     <div class="terminal-dot"></div>
   </div>
   <div class="terminal-body" id="terminal-body">
-  </div>
-  <div class="terminal-input" id="terminal-input">
-    <span class="prompt-user">dennis</span><span class="prompt-symbol">@</span><span
-      class="prompt-host">portfolio</span><span class="prompt-symbol">&nbsp;~ %&nbsp;</span>
-    <input type="text" id="terminal-cmd" autocomplete="off" spellcheck="false" autofocus>
+    <div class="terminal-input" id="terminal-input">
+      {{ prompt() }}
+      <input type="text" id="terminal-cmd" autocomplete="off" spellcheck="false" aria-label="Terminal input">
+    </div>
   </div>
   <div class="terminal-hint">click to type · try <strong>help</strong></div>
+
+  <template id="terminal-prompt">{{ prompt() }}</template>
 </div>
 
 <script type="application/json" id="terminal-whoami">{{ whoami | jsonSafe | safe }}</script>
@@ -27,6 +29,9 @@
     const terminalInput = document.getElementById('terminal-input');
     const cmdInput = document.getElementById('terminal-cmd');
     const terminal = document.getElementById('terminal');
+    const promptTpl = document.getElementById('terminal-prompt');
+    const shellUser = promptTpl.content.querySelector('.prompt-user').textContent;
+    const shellHost = promptTpl.content.querySelector('.prompt-host').textContent;
 
     const whoami = JSON.parse(document.getElementById('terminal-whoami').textContent);
     const contacts = JSON.parse(document.getElementById('terminal-contact').textContent);
@@ -39,104 +44,113 @@
 
     const blank = { t: '\u00a0', c: '' };
 
-    const prompt = '<span class="prompt-user">dennis</span><span class="prompt-symbol">@</span><span class="prompt-host">portfolio</span><span class="prompt-symbol">&nbsp;~ %&nbsp;</span>';
+    const cmdHistory = []; let hIdx = 0;
+    const commands = {
+      help: {
+        desc: 'list commands',
+        run() {
+          const rows = Object.entries(commands).filter(([, c]) => !c.hidden);
+          const label = ([name, c]) => (c.usage ? `${name} ${c.usage}` : name);
+          const width = Math.max(...rows.map(r => label(r).length)) + 2;
+          return [
+            { t: 'Available commands:', c: 'dim' },
+            ...rows.map(r => ({ t: `  ${label(r).padEnd(width)}— ${r[1].desc}`, c: '' })),
+          ];
+        },
+      },
+      whoami: {
+        desc: 'who is this?',
+        run: () => [
+          { t: [whoami.name, whoami.title].join(' - '), c: 'bright' },
+          { t: whoami.shortDescription, c: 'dim' },
+        ],
+      },
+      ls: {
+        usage: '[category]',
+        desc: `list projects (categories: ${Array.from(new Set(projects.flatMap(({ categories }) => categories))).join(', ')}. default: all)`,
+        complete: () => ['projects', ...new Set(projects.flatMap(p => p.categories.filter(Boolean)))],
+        run(args) {
+          const target = args[0]?.toLowerCase();
+          let list = projects;
+          if (target && target != 'projects') {
+            list = projects.filter(p => p.categories.includes(target));
+            if (!list.length) {
+              return [{ t: `ls: cannot access '${args[0]}': No such file or directory`, c: 'error' }];
+            }
+          }
+          return [{ t: list.map(p => p.id + '/').join('    '), c: '' }];
+        },
+      },
+      cat: {
+        usage: '<file>',
+        desc: 'read a file (status.txt, README.md)',
+        complete: () => ['status', 'status.txt', 'README.md'],
+        run(args) {
+          if (!args[0]) return [{ t: 'cat: missing file operand', c: 'error' }];
+          if (args[0] == 'status' || args[0] == 'status.txt') {
+            return [{ t: 'Currently open to new opportunities', c: 'highlight' }];
+          }
+          if (args[0] == 'README.md') {
+            return [
+              { t: 'Welcome! Type "help" for available commands.', c: 'dim' },
+            ];
+          }
+          return [{ t: `cat: ${args[0]}: No such file`, c: 'error' }];
+        },
+      },
+      skills: { desc: 'tech stack', run: () => skills.map((skill) => ({ t: skill, c: 'bright' })) },
+      contact: {
+        desc: 'get in touch', run() {
+          const width = Math.max(...Object.keys(contacts).map((k) => k.length)) + 3;
+          return Object.entries(contacts).map(([label, value]) => ({
+            parts: [
+              { t: `${label}:`.padEnd(width) },
+              { t: value, href: label == "Email" ? `mailto:${value}` : value },
+            ],
+            c: 'cmd-name',
+          }));
+        }
+      },
+      open: {
+        usage: '<project>',
+        desc: 'open a project',
+        complete: () => projects.map(p => p.id),
+        run(args) {
+          if (!args[0]) return [{ t: 'open: missing project name', c: 'error' }];
+          const p = findProject(args[0]);
+          if (!p) return [{ t: `open: "${args[0]}" not found`, c: 'error' }];
 
-    const argCompletions = {
-      ls: () => ['projects', ...new Set(projects.flatMap(p => p.categories.filter(Boolean)))],
-      cat: () => ['status', 'status.txt', 'README.md'],
-      open: () => projects.map(p => p.id),
+          const url = p.url || `/#project-${p.id}`;
+          setTimeout(() => { window.location.href = url; }, 400);
+          return [{ t: `Opening ${p.id} → ${url}`, c: 'cmd-name' }];
+        },
+      },
+      clear: {
+        desc: 'clear terminal',
+        run() { terminalBody.innerHTML = ''; return []; },
+      },
     };
 
     const commonPrefix = (strs) =>
       strs.reduce((a, b) => {
         let i = 0;
-        while (i < a.length && i < b.length && a[i] === b[i]) i++;
+        while (i < a.length && i < b.length && a[i] == b[i]) i++;
         return a.slice(0, i);
       });
-
-    const commands = {
-      help() {
-        return [
-          { t: 'Available commands:', c: 'dim' },
-          { t: '  whoami        — who is this?', c: '' },
-          { t: '  ls projects   — list projects', c: '' },
-          { t: '  cat status    — current status', c: '' },
-          { t: '  skills        — tech stack', c: '' },
-          { t: '  contact       — get in touch', c: '' },
-          { t: '  open [name]   — open a project page', c: '' },
-          { t: '  clear         — clear terminal', c: '' },
-        ];
-      },
-      whoami() {
-        return [
-          { t: [whoami.name, whoami.title].join(' - '), c: 'bright' },
-          { t: whoami.shortDescription, c: 'dim' },
-        ];
-      },
-      ls(args) {
-        const target = args[0]?.toLowerCase();
-        let list = projects;
-        if (target && target != 'projects') {
-          list = projects.filter(p => p.categories.includes(target));
-          if (!list.length) {
-            return [{ t: `ls: cannot access '${args[0]}': No such file or directory`, c: 'error' }];
-          }
-        }
-        return [{ t: list.map(p => p.id + '/').join('    '), c: '' }];
-      },
-      cat(args) {
-        if (!args[0]) return [{ t: 'cat: missing file operand', c: 'error' }];
-        if (args[0] == 'status' || args[0] == 'status.txt') {
-          return [{ t: 'Currently open to new opportunities', c: 'highlight' }];
-        }
-        if (args[0] == 'README.md') {
-          return [
-            { t: 'Welcome! Type "help" for available commands.', c: 'dim' },
-          ];
-        }
-        return [{ t: `cat: ${args[0]}: No such file`, c: 'error' }];
-      },
-      skills() {
-        return skills.map((skill) => ({ t: skill, c: 'bright' }));
-      },
-      contact() {
-        const width = Math.max(...Object.keys(contacts).map((k) => k.length)) + 3;
-        return Object.entries(contacts).map(([label, value]) => ({
-          parts: [
-            { t: `${label}:`.padEnd(width) },
-            { t: value, href: label == "Email" ? `mailto:${value}` : value },
-          ],
-          c: 'cmd-name',
-        }));
-      },
-      open(args) {
-        if (!args[0]) return [{ t: 'open: missing project name', c: 'error' }];
-        const p = findProject(args[0]);
-        if (!p) return [{ t: `open: "${args[0]}" not found`, c: 'error' }];
-
-        const url = p.url || `/#project-${p.id}`;
-        setTimeout(() => { window.location.href = url; }, 400);
-        return [{ t: `Opening ${p.id} → ${url}`, c: 'cmd-name' }];
-      },
-      clear() {
-        terminalBody.innerHTML = '';
-        return [];
-      },
-    };
 
     function complete() {
       const parts = cmdInput.value.trimStart().split(/\s+/);
       const partial = parts.pop();            // the word under the cursor
       const lower = partial.toLowerCase();
 
+      const name = parts[0].toLowerCase();
       let candidates;
       if (parts.length === 0) {
-        candidates = Object.keys(commands);   // completing the command itself
+        candidates = Object.entries(commands).filter(([, c]) => !c.hidden).map(([n]) => n);
       } else if (parts.length === 1) {
-        candidates = argCompletions[parts[0].toLowerCase()]?.() ?? [];
-      } else {
-        return;                               // only the first argument is completed
-      }
+        const name = parts[0].toLowerCase();
+        candidates = Object.hasOwn(commands, name) ? commands[name].complete?.() ?? [] : [];
+      } else return;
 
       const matches = candidates.filter(c => c.toLowerCase().startsWith(lower));
       if (!matches.length) return;
@@ -145,25 +159,24 @@
 
       if (prefix.length > partial.length) {
         // Progress: fill in as much as is unambiguous
-        const isUniqueCommand = matches.length === 1 && parts.length === 0;
+        const isUniqueCommand = matches.length == 1 && parts.length == 0;
         cmdInput.value = [...parts, prefix].join(' ') + (isUniqueCommand ? ' ' : '');
       } else if (matches.length > 1) {
         // Stuck on an ambiguous prefix: list the options like a real shell
         appendPrompt(cmdInput.value);
         appendOutput([{ t: matches.join('    '), c: '' }]);
-        terminal.scrollTo({ top: terminal.scrollHeight, behavior: 'smooth' });
+        terminalBody.scrollTo({ top: terminalBody.scrollHeight, behavior: 'smooth' });
       }
     }
 
     function appendPrompt(cmd) {
       const line = document.createElement('div');
       line.className = 'prompt-line';
-      line.innerHTML = prompt;
       const span = document.createElement('span');
       span.className = 'prompt-cmd';
       span.textContent = cmd || '';
-      line.appendChild(span);
-      terminalBody.appendChild(line);
+      line.append(promptTpl.content.cloneNode(true), span);
+      terminalBody.insertBefore(line, terminalInput);
     }
 
     function appendOutput(lines) {
@@ -178,7 +191,9 @@
             const a = document.createElement('a');
             a.href = part.href;
             a.textContent = part.t;
-            a.target = '_blank';
+            if (!part.href.startsWith('mailto:')) {
+              a.target = '_blank';
+            }
             a.rel = 'noopener noreferrer';
             el.appendChild(a);
           } else {
@@ -188,7 +203,7 @@
 
         wrap.appendChild(el);
       });
-      terminalBody.appendChild(wrap);
+      terminalBody.insertBefore(wrap, terminalInput);
     }
 
     function processCommand(input) {
@@ -197,14 +212,14 @@
       const parts = trimmed.split(/\s+/);
       const cmd = parts.shift().toLowerCase();
       appendPrompt(trimmed);
-      const handler = commands[cmd];
+      const handler = Object.hasOwn(commands, cmd) ? commands[cmd] : null;
       if (!handler) {
-        appendOutput([{ t: `dennis@portfolio: command not found: ${cmd}`, c: 'error' }]);
+        appendOutput([{ t: `${shellUser}@${shellHost}: command not found: ${cmd}`, c: 'error' }]);
       } else {
-        const result = handler(parts);
+        const result = handler.run(parts);
         if (result != null) appendOutput(result);
       }
-      terminal.scrollTo({ top: terminal.scrollHeight, behavior: 'smooth' });
+      terminalBody.scrollTo({ top: terminalBody.scrollHeight, behavior: 'smooth' });
     }
 
     // Activate terminal on click
@@ -215,23 +230,36 @@
 
     cmdInput.addEventListener('keydown', (e) => {
       if (e.key == 'Enter') {
+        if (cmdInput.value.trim()) cmdHistory.push(cmdInput.value);
+        hIdx = cmdHistory.length;
         processCommand(cmdInput.value);
         cmdInput.value = '';
       } else if (e.key == "Tab") {
         e.preventDefault();
         complete();
+      } else if (e.key == 'ArrowUp' || e.key == 'ArrowDown') {
+        e.preventDefault();
+        hIdx = Math.min(Math.max(hIdx + (e.key == 'ArrowUp' ? -1 : 1), 0), cmdHistory.length);
+        cmdInput.value = cmdHistory[hIdx] ?? '';
+      } else if (e.ctrlKey && e.key == 'l') {
+        e.preventDefault();
+        commands.clear();
       }
     });
 
     // Initial welcome sequence
     (function welcome() {
       appendPrompt('whoami');
-      appendOutput(commands.whoami());
+      appendOutput(commands.whoami.run());
       appendPrompt('cat status');
-      appendOutput(commands.cat(['status']));
+      appendOutput(commands.cat.run(['status']));
       appendPrompt('help');
-      appendOutput(commands.help());
+      appendOutput(commands.help.run());
     })();
+
+    if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      cmdInput.focus({ preventScroll: true });
+    }
   })();
 </script>
 {% endmacro %}

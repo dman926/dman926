@@ -1,0 +1,8 @@
+{% macro prompt(user="dennis", host="portfolio") -%}
+<span class="prompt" aria-hidden="true">
+  <span class="prompt-user">{{ user }}</span>
+  <span class="prompt-symbol">@</span>
+  <span class="prompt-host">{{ host }}</span>
+  <span class="prompt-symbol"> ~ % </span>
+</span>
+{%- endmacro %}

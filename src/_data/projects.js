@@ -4,7 +4,7 @@ const projects = [
     categories: ["software"],
     title: "Semiconductor Production Tracker",
     subtitle: "Legacy Codebase Stabilization & Refactoring",
-    desc: "Rescued and stabilized an internal production tracking system under contract, resolving critical bottlenecks and race conditions.",
+    description: "Rescued and stabilized an internal production tracking system under contract, resolving critical bottlenecks and race conditions.",
     tags: ["TypeScript", "Node.js", "PostgreSQL", "Legacy Debugging"],
     metrics: [
       { value: "100%", label: "Data Integrity" },
@@ -26,7 +26,7 @@ const projects = [
     categories: ["software"],
     title: "Biomedical Data Dashboard",
     subtitle: "Tenant-Based Analytics & Report Generator",
-    desc: "Multi-tenant data dashboard rendering complex medical and drug dosing analytics with automated report generation.",
+    description: "Multi-tenant data dashboard rendering complex medical and drug dosing analytics with automated report generation.",
     tags: ["Full-Stack", "TypeScript", "PostgreSQL", "Data Viz"],
     metrics: [
       { value: "Multi-Tenant", label: "Architecture" },
@@ -48,7 +48,7 @@ const projects = [
     categories: ["todo"],
     title: "Homelab",
     subtitle: "",
-    desc: "",
+    description: "",
     tags: [],
     metrics: [
       { value: "", label: "" },
@@ -70,7 +70,7 @@ const projects = [
     categories: ["todo"],
     title: "Parametric CAD and Hardware",
     subtitle: "",
-    desc: "",
+    description: "",
     tags: [],
     metrics: [
       { value: "", label: "" },
@@ -92,7 +92,7 @@ const projects = [
     categories: ["todo"],
     title: "@dman926/svelte-md",
     subtitle: "",
-    desc: "",
+    description: "",
     tags: [],
     metrics: [
       { value: "", label: "" },
@@ -114,7 +114,7 @@ const projects = [
     categories: ["todo"],
     title: "@dman926/better-auth-conjoined-email",
     subtitle: "",
-    desc: "",
+    description: "",
     tags: [],
     metrics: [
       { value: "", label: "" },
@@ -168,6 +168,11 @@ const deepCopy = (obj, visited = new WeakMap()) => {
 export default function () {
   return {
     all: projects,
+    terminalProjects: projects.map(({ id, categories, url }) => ({
+      id,
+      categories,
+      url,
+    })),
     categories: [
       "all",
       ...Array.from(

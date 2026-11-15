@@ -2,10 +2,10 @@
 layout: base.njk
 title: 404 · Page not found
 permalink: 404.html
+nobot: true
 eleventyExcludeFromCollections: true
 ---
-{% set prompt %}<span class="prompt-user">dennis</span><span class="prompt-symbol">@</span><span
-  class="prompt-host">portfolio</span><span class="prompt-symbol">&nbsp;~ %&nbsp;</span>{% endset %}
+{% from "components/prompt.njk" import prompt %}
 
 <main class="not-found">
   <div class="terminal">
@@ -16,19 +16,19 @@ eleventyExcludeFromCollections: true
     </div>
 
     <div class="terminal-body">
-      <div class="prompt-line">{{ prompt | safe }}<span class="prompt-cmd" id="nf-cmd">cat that-page</span></div>
+      <div class="prompt-line">{{ prompt() }}<span class="prompt-cmd" id="nf-cmd">cat that-page</span></div>
       <div class="output-line error" id="nf-error">cat: that-page: No such file</div>
 
-      <div class="prompt-line">{{ prompt | safe }}<span class="prompt-cmd">echo $?</span></div>
+      <div class="prompt-line">{{ prompt() }}<span class="prompt-cmd">echo $?</span></div>
       <div class="output-line error-code">404</div>
       <div class="output-line dim">This page doesn't exist, or it moved.</div>
 
-      <div class="prompt-line">{{ prompt | safe }}<span class="prompt-cmd">cd ~</span></div>
+      <div class="prompt-line">{{ prompt() }}<span class="prompt-cmd">cd ~</span></div>
       <div class="output-line cmd-name"><a href="/">&larr; Back to the portfolio</a></div>
     </div>
 
     <div class="terminal-input">
-      {{ prompt | safe }}
+      {{ prompt() }}
       <input type="text" id="nf-input" autocomplete="off" spellcheck="false" autofocus aria-label="Terminal input">
     </div>
   </div>

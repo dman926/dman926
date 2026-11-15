@@ -1,6 +1,7 @@
 ---
 layout: base.njk
-title: Stelmach Portfolio
+eleventyComputed:
+  title: "{{ whoami.name }} · {{ whoami.title }}"
 ---
 {% from "components/nav-items.njk" import navItems %}
 {% from "components/project-card.njk" import projectCard %}
@@ -16,7 +17,7 @@ title: Stelmach Portfolio
       <div class="skills-label">Core Stack</div>
       <ul class="skills-list">
         {% for skill in skills %}
-          <li>{{ skill }}</li>
+        <li>{{ skill }}</li>
         {% endfor %}
       </ul>
     </div>
@@ -30,13 +31,13 @@ title: Stelmach Portfolio
   </aside>
 
   <main class="content">
-    {{ terminal(whoami, contact, skills, projects.all) }}
+    {{ terminal(whoami, contact, skills, projects.terminalProjects) }}
 
-    <div class="section-label reveal">Selected Work</div>
+    <h2 class="section-label reveal">Selected Work</h2>
     <div class="filter-bar reveal">
       {% for tag in projects.categories %}
       <button class="filter-btn{{ " active" if tag == "all" }}" data-filter="{{ tag }}"
-        onclick="filterProjects('{{ tag }}', this)">
+        onclick="filterProjects(`{{ tag }}`, this)">
         {{ tag | capitalize }}
       </button>
       {% endfor %}
@@ -115,16 +116,24 @@ title: Stelmach Portfolio
     });
   }
 
-  /* ── Toggle expand with animation ─────────────────────────── */
-  function toggleExpand(card) {
-    const wasExpanded = card.classList.contains('expanded');
-    document.querySelectorAll('.project-card.expanded').forEach(c => {
-      c.classList.remove('expanded');
-    });
-    if (!wasExpanded) {
-      card.classList.add('expanded');
-    }
+  /* ── Project overlay ── */
+  let openedInPage = false;
+  addEventListener('hashchange', () => {
+    if (location.hash.startsWith('#project-')) openedInPage = true;
+  });
+  function closeOverlay() {
+    if (openedInPage) { openedInPage = false; history.back(); } // restores scroll position
+    else location.replace('#');                                  // deep-link case
   }
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('.overlay-close-btn') || e.target.classList.contains('project-overlay')) {
+      e.preventDefault();
+      closeOverlay();
+    }
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key == 'Escape' && location.hash.startsWith('#project-')) closeOverlay();
+  });
 
   /* ── Scroll reveal ────────────────────────────────────────── */
   const observer = new IntersectionObserver((entries) => {
