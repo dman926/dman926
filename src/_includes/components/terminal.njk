@@ -1,0 +1,237 @@
+{% macro terminal(whoami, contact, skills, projects) %}
+<div class="terminal reveal" id="terminal">
+  <div class="terminal-dots">
+    <div class="terminal-dot"></div>
+    <div class="terminal-dot"></div>
+    <div class="terminal-dot"></div>
+  </div>
+  <div class="terminal-body" id="terminal-body">
+  </div>
+  <div class="terminal-input" id="terminal-input">
+    <span class="prompt-user">dennis</span><span class="prompt-symbol">@</span><span
+      class="prompt-host">portfolio</span><span class="prompt-symbol">&nbsp;~ %&nbsp;</span>
+    <input type="text" id="terminal-cmd" autocomplete="off" spellcheck="false" autofocus>
+  </div>
+  <div class="terminal-hint">click to type · try <strong>help</strong></div>
+</div>
+
+<script type="application/json" id="terminal-whoami">{{ whoami | jsonSafe | safe }}</script>
+<script type="application/json" id="terminal-contact">{{ contact | jsonSafe | safe }}</script>
+<script type="application/json" id="terminal-skills">{{ skills | jsonSafe | safe }}</script>
+<script type="application/json" id="terminal-projects">{{ projects | jsonSafe | safe }}</script>
+
+<script>
+  (() => {
+    /* ── Terminal ─────────────────────────────────────────────── */
+    const terminalBody = document.getElementById('terminal-body');
+    const terminalInput = document.getElementById('terminal-input');
+    const cmdInput = document.getElementById('terminal-cmd');
+    const terminal = document.getElementById('terminal');
+
+    const whoami = JSON.parse(document.getElementById('terminal-whoami').textContent);
+    const contacts = JSON.parse(document.getElementById('terminal-contact').textContent);
+    const skills = JSON.parse(document.getElementById('terminal-skills').textContent);
+    const projects = JSON.parse(document.getElementById('terminal-projects').textContent)
+      .filter(p => p.id);
+
+    const findProject = (name) =>
+      projects.find(p => p.id.toLowerCase() == String(name).toLowerCase());
+
+    const blank = { t: '\u00a0', c: '' };
+
+    const prompt = '<span class="prompt-user">dennis</span><span class="prompt-symbol">@</span><span class="prompt-host">portfolio</span><span class="prompt-symbol">&nbsp;~ %&nbsp;</span>';
+
+    const argCompletions = {
+      ls: () => ['projects', ...new Set(projects.flatMap(p => p.categories.filter(Boolean)))],
+      cat: () => ['status', 'status.txt', 'README.md'],
+      open: () => projects.map(p => p.id),
+    };
+
+    const commonPrefix = (strs) =>
+      strs.reduce((a, b) => {
+        let i = 0;
+        while (i < a.length && i < b.length && a[i] === b[i]) i++;
+        return a.slice(0, i);
+      });
+
+    const commands = {
+      help() {
+        return [
+          { t: 'Available commands:', c: 'dim' },
+          { t: '  whoami        — who is this?', c: '' },
+          { t: '  ls projects   — list projects', c: '' },
+          { t: '  cat status    — current status', c: '' },
+          { t: '  skills        — tech stack', c: '' },
+          { t: '  contact       — get in touch', c: '' },
+          { t: '  open [name]   — open a project page', c: '' },
+          { t: '  clear         — clear terminal', c: '' },
+        ];
+      },
+      whoami() {
+        return [
+          { t: [whoami.name, whoami.title].join(' - '), c: 'bright' },
+          { t: whoami.shortDescription, c: 'dim' },
+        ];
+      },
+      ls(args) {
+        const target = args[0]?.toLowerCase();
+        let list = projects;
+        if (target && target != 'projects') {
+          list = projects.filter(p => p.categories.includes(target));
+          if (!list.length) {
+            return [{ t: `ls: cannot access '${args[0]}': No such file or directory`, c: 'error' }];
+          }
+        }
+        return [{ t: list.map(p => p.id + '/').join('    '), c: '' }];
+      },
+      cat(args) {
+        if (!args[0]) return [{ t: 'cat: missing file operand', c: 'error' }];
+        if (args[0] == 'status' || args[0] == 'status.txt') {
+          return [{ t: 'Currently open to new opportunities', c: 'highlight' }];
+        }
+        if (args[0] == 'README.md') {
+          return [
+            { t: 'Welcome! Type "help" for available commands.', c: 'dim' },
+          ];
+        }
+        return [{ t: `cat: ${args[0]}: No such file`, c: 'error' }];
+      },
+      skills() {
+        return skills.map((skill) => ({ t: skill, c: 'bright' }));
+      },
+      contact() {
+        const width = Math.max(...Object.keys(contacts).map((k) => k.length)) + 3;
+        return Object.entries(contacts).map(([label, value]) => ({
+          parts: [
+            { t: `${label}:`.padEnd(width) },
+            { t: value, href: label == "Email" ? `mailto:${value}` : value },
+          ],
+          c: 'cmd-name',
+        }));
+      },
+      open(args) {
+        if (!args[0]) return [{ t: 'open: missing project name', c: 'error' }];
+        const p = findProject(args[0]);
+        if (!p) return [{ t: `open: "${args[0]}" not found`, c: 'error' }];
+
+        const url = p.url || `/#project-${p.id}`;
+        setTimeout(() => { window.location.href = url; }, 400);
+        return [{ t: `Opening ${p.id} → ${url}`, c: 'cmd-name' }];
+      },
+      clear() {
+        terminalBody.innerHTML = '';
+        return [];
+      },
+    };
+
+    function complete() {
+      const parts = cmdInput.value.trimStart().split(/\s+/);
+      const partial = parts.pop();            // the word under the cursor
+      const lower = partial.toLowerCase();
+
+      let candidates;
+      if (parts.length === 0) {
+        candidates = Object.keys(commands);   // completing the command itself
+      } else if (parts.length === 1) {
+        candidates = argCompletions[parts[0].toLowerCase()]?.() ?? [];
+      } else {
+        return;                               // only the first argument is completed
+      }
+
+      const matches = candidates.filter(c => c.toLowerCase().startsWith(lower));
+      if (!matches.length) return;
+
+      const prefix = commonPrefix(matches);
+
+      if (prefix.length > partial.length) {
+        // Progress: fill in as much as is unambiguous
+        const isUniqueCommand = matches.length === 1 && parts.length === 0;
+        cmdInput.value = [...parts, prefix].join(' ') + (isUniqueCommand ? ' ' : '');
+      } else if (matches.length > 1) {
+        // Stuck on an ambiguous prefix: list the options like a real shell
+        appendPrompt(cmdInput.value);
+        appendOutput([{ t: matches.join('    '), c: '' }]);
+        terminal.scrollTo({ top: terminal.scrollHeight, behavior: 'smooth' });
+      }
+    }
+
+    function appendPrompt(cmd) {
+      const line = document.createElement('div');
+      line.className = 'prompt-line';
+      line.innerHTML = prompt;
+      const span = document.createElement('span');
+      span.className = 'prompt-cmd';
+      span.textContent = cmd || '';
+      line.appendChild(span);
+      terminalBody.appendChild(line);
+    }
+
+    function appendOutput(lines) {
+      const wrap = document.createElement('div');
+      lines.forEach(l => {
+        const el = document.createElement('div');
+        el.className = 'output-line' + (l.c ? ' ' + l.c : '');
+
+        const parts = l.parts ?? [{ t: l.t }];
+        parts.forEach(part => {
+          if (part.href) {
+            const a = document.createElement('a');
+            a.href = part.href;
+            a.textContent = part.t;
+            a.target = '_blank';
+            a.rel = 'noopener noreferrer';
+            el.appendChild(a);
+          } else {
+            el.appendChild(document.createTextNode(part.t));
+          }
+        });
+
+        wrap.appendChild(el);
+      });
+      terminalBody.appendChild(wrap);
+    }
+
+    function processCommand(input) {
+      const trimmed = input.trim();
+      if (!trimmed) return;
+      const parts = trimmed.split(/\s+/);
+      const cmd = parts.shift().toLowerCase();
+      appendPrompt(trimmed);
+      const handler = commands[cmd];
+      if (!handler) {
+        appendOutput([{ t: `dennis@portfolio: command not found: ${cmd}`, c: 'error' }]);
+      } else {
+        const result = handler(parts);
+        if (result != null) appendOutput(result);
+      }
+      terminal.scrollTo({ top: terminal.scrollHeight, behavior: 'smooth' });
+    }
+
+    // Activate terminal on click
+    terminal.addEventListener('click', () => {
+      terminal.classList.add('active');
+      cmdInput.focus();
+    });
+
+    cmdInput.addEventListener('keydown', (e) => {
+      if (e.key == 'Enter') {
+        processCommand(cmdInput.value);
+        cmdInput.value = '';
+      } else if (e.key == "Tab") {
+        e.preventDefault();
+        complete();
+      }
+    });
+
+    // Initial welcome sequence
+    (function welcome() {
+      appendPrompt('whoami');
+      appendOutput(commands.whoami());
+      appendPrompt('cat status');
+      appendOutput(commands.cat(['status']));
+      appendPrompt('help');
+      appendOutput(commands.help());
+    })();
+  })();
+</script>
+{% endmacro %}

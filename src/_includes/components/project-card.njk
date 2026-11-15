@@ -1,0 +1,52 @@
+{% macro projectCard(project) %}
+<div class="project-card reveal" data-categories="{{ project.categories }}">
+  <!-- Card preview trigger -->
+  <a href="#project-{{ project.id }}" class="card-trigger">
+    <h3 class="project-title">{{ project.title }}</h3>
+    <p class="project-subtitle">{{ project.subtitle }}</p>
+    <p class="project-desc">{{ project.description }}</p>
+    <div class="project-tags">
+      {% for tag in project.tags %}
+      <span class="tag">{{ tag }}</span>
+      {% endfor %}
+    </div>
+  </a>
+</div>
+
+<div id="project-{{ project.id }}" class="project-overlay">
+  <div class="overlay-content">
+    <a href="#" class="overlay-close-btn">← Back to projects</a>
+    
+    <h2 class="project-title" style="font-size: 1.5rem; margin-top: 1rem; margin-bottom: 0.25rem;">{{ project.title }}</h2>
+    <p class="project-subtitle">{{ project.subtitle }}</p>
+    <p class="project-desc" style="margin-bottom: 1.5rem;">{{ project.description }}</p>
+    
+    <div class="project-tags" style="margin-bottom: 1.5rem;">
+      {% for tag in project.tags %}
+      <span class="tag">{{ tag }}</span>
+      {% endfor %}
+    </div>
+
+    <div class="metrics-row">
+      {% for metric in project.metrics %}
+      <div class="metric">
+        <div class="metric-value">{{ metric.value }}</div>
+        <div class="metric-label">{{ metric.label }}</div>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% for detail in project.details %}
+    <div class="detail-section" style="margin-top: 1.5rem;">
+      <div class="detail-label">{{ detail.label }}</div>
+      {% if detail.text %}
+      <p class="detail-text">{{ detail.text }}</p>
+      {% endif %}
+      {% if detail.code %}
+      <pre class="detail-code"><code>{{ detail.code }}</code></pre>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endmacro %}

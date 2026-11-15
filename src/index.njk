@@ -1,0 +1,140 @@
+---
+layout: base.njk
+title: Stelmach Portfolio
+---
+{% from "components/nav-items.njk" import navItems %}
+{% from "components/project-card.njk" import projectCard %}
+{% from "components/terminal.njk" import terminal %}
+
+<div class="layout">
+  <aside class="sidebar">
+    <div>
+      <h1 class="name">{{ whoami.name }}</h1>
+      <p class="role">{{ whoami.title }}</p>
+      <p class="bio">{{ whoami.description }}</p>
+
+      <div class="skills-label">Core Stack</div>
+      <ul class="skills-list">
+        {% for skill in skills %}
+          <li>{{ skill }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <nav class="sidebar-nav">
+      {{ navItems(contact) }}
+      <button id="theme-toggle" class="theme-btn" aria-label="Toggle theme">
+        theme: <span id="theme-label">auto</span>
+      </button>
+    </nav>
+  </aside>
+
+  <main class="content">
+    {{ terminal(whoami, contact, skills, projects.all) }}
+
+    <div class="section-label reveal">Selected Work</div>
+    <div class="filter-bar reveal">
+      {% for tag in projects.categories %}
+      <button class="filter-btn{{ " active" if tag == "all" }}" data-filter="{{ tag }}"
+        onclick="filterProjects('{{ tag }}', this)">
+        {{ tag | capitalize }}
+      </button>
+      {% endfor %}
+    </div>
+
+    <div class="project-grid">
+      {% for project in projects.all %}
+      {{ projectCard(project) }}
+      {% endfor %}
+    </div>
+
+    <footer class="footer reveal">
+      {{ navItems(contact) }}
+    </footer>
+  </main>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    /* ── Theme Switcher ─────────────────────────────────────── */
+    const toggleBtn = document.getElementById('theme-toggle');
+    const themeLabel = document.getElementById('theme-label');
+    const htmlEl = document.documentElement;
+
+    // Helper to update button text label based on current state
+    function updateLabel() {
+      const currentTheme = htmlEl.getAttribute('data-theme');
+      if (currentTheme) {
+        themeLabel.textContent = currentTheme;
+      } else {
+        // Fallback to system preference if no explicit data-theme attribute is set
+        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        themeLabel.textContent = isDark ? 'dark (auto)' : 'light (auto)';
+      }
+    }
+
+    updateLabel();
+
+    // Handle click toggle
+    toggleBtn.addEventListener('click', () => {
+      const currentTheme = htmlEl.getAttribute('data-theme');
+      let newTheme;
+
+      if (currentTheme == 'dark') {
+        newTheme = 'light';
+      } else if (currentTheme == 'light') {
+        newTheme = 'dark';
+      } else {
+        // If currently following system preference, flip to the opposite of what system prefers
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        newTheme = prefersDark ? 'light' : 'dark';
+      }
+
+      htmlEl.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      updateLabel();
+    });
+  });
+
+  /* ── Filter projects ──────────────────────────────────────── */
+  function filterProjects(category, btn) {
+    const unset = btn.dataset.filter != 'all' && btn.classList.contains('active');
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    if (unset) {
+      btn = document.querySelector('.filter-btn[data-filter=all]');
+      category = 'all';
+    }
+    btn.classList.add('active');
+
+    document.querySelectorAll('.project-card').forEach(card => {
+      if (category == 'all' || card.dataset.categories.split(',').includes(category)) {
+        card.classList.remove('hidden');
+      } else {
+        card.classList.add('hidden');
+      }
+    });
+  }
+
+  /* ── Toggle expand with animation ─────────────────────────── */
+  function toggleExpand(card) {
+    const wasExpanded = card.classList.contains('expanded');
+    document.querySelectorAll('.project-card.expanded').forEach(c => {
+      c.classList.remove('expanded');
+    });
+    if (!wasExpanded) {
+      card.classList.add('expanded');
+    }
+  }
+
+  /* ── Scroll reveal ────────────────────────────────────────── */
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>

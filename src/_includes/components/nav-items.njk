@@ -1,0 +1,5 @@
+{% macro navItems(contact) %}
+{% for label, link in contact %}
+<a href="{{ link | prepend("mailto:") if label == "Email" else link }}">{{ label }}</a>
+{% endfor %}
+{% endmacro %}
