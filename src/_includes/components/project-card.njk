@@ -16,11 +16,12 @@
 <div id="project-{{ project.id }}" class="project-overlay">
   <div class="overlay-content" role="dialog" aria-modal="true" aria-labelledby="project-{{ project.id }}-title">
     <a href="#" class="overlay-close-btn">← Back to projects</a>
-    
-    <h2 class="project-title" id="project-{{ project.id }}-title" style="font-size: 1.5rem; margin-top: 1rem; margin-bottom: 0.25rem;">{{ project.title }}</h2>
+
+    <h2 class="project-title" id="project-{{ project.id }}-title"
+      style="font-size: 1.5rem; margin-top: 1rem; margin-bottom: 0.25rem;">{{ project.title }}</h2>
     <p class="project-subtitle">{{ project.subtitle }}</p>
     <p class="project-desc" style="margin-bottom: 1.5rem;">{{ project.description }}</p>
-    
+
     <div class="project-tags" style="margin-bottom: 1.5rem;">
       {% for tag in project.tags %}
       <span class="tag">{{ tag }}</span>
@@ -40,13 +41,20 @@
     <div class="detail-section" style="margin-top: 1.5rem;">
       <div class="detail-label">{{ detail.label }}</div>
       {% if detail.text %}
-      <p class="detail-text">{{ detail.text }}</p>
+      <p class="detail-text">{{ detail.text | safe }}</p>
       {% endif %}
       {% if detail.code %}
       <pre class="detail-code"><code>{{ detail.code }}</code></pre>
       {% endif %}
     </div>
     {% endfor %}
+
+    {% if project.externalLink %}
+    <a class="overlay-external-link-btn" href="{{ project.externalLink.url }}" target="_blank"
+      rel="noopener noreferrer">
+      {{ project.externalLink.label }}
+    </a>
+    {% endif %}
   </div>
 </div>
 {% endmacro %}

@@ -95,6 +95,15 @@ body {
   }
 }
 
+table, th, td {
+  border: 1px solid var(--border);
+  border-collapse: collapse;
+}
+th, td {
+  padding: 0.2rem 0.4rem;
+  white-space: break-spaces;
+}
+
 /* Sidebar - sticky on desktop, top bar on mobile */
 .sidebar {
   background: var(--sidebar-bg);
@@ -467,7 +476,7 @@ body {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 1rem;
-  align-items: start;
+  align-items: center;
   position: relative; /* Container for absolute positioning if desired */
 }
 
@@ -478,6 +487,7 @@ body {
   display: flex;
   flex-direction: column;
   height: 100%;
+  padding: 1.5rem;
 }
 
 /* Base card container stays locked in the grid */
@@ -485,7 +495,6 @@ body {
   background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: 8px;
-  padding: 1.5rem;
   display: flex;
   flex-direction: column;
   transition:
@@ -588,6 +597,25 @@ body {
   background: var(--bg);
 }
 
+.overlay-external-link-btn {
+  font-family: var(--font-mono);
+  text-decoration: none;
+  display: inline-block;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.4rem 0.8rem;
+  width: 100%;
+  text-align: center;
+  transition: all 0.15s;)
+}
+
+.overlay-external-link-btn:hover {
+  color: var(--fg);
+  background: var(--fg-muted);
+  border-color: var(--border-strong);
+}
+
 @media (max-width: 800px) {
   .project-grid {
     grid-template-columns: minmax(0, 1fr);
@@ -665,6 +693,7 @@ body {
   margin-bottom: 0.3rem;
 }
 .detail-text {
+  white-space: break-spaces;
   font-size: 0.85rem;
   color: var(--fg-secondary);
   line-height: 1.5;

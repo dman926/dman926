@@ -38,7 +38,7 @@ eleventyComputed:
       {% for tag in projects.categories %}
       <button class="filter-btn{{ " active" if tag == "all" }}" data-filter="{{ tag }}"
         onclick="filterProjects(`{{ tag }}`, this)">
-        {{ tag | capitalize }}
+        {{ tag | titleFull }}
       </button>
       {% endfor %}
     </div>
