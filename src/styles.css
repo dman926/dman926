@@ -612,7 +612,7 @@ th, td {
   border: 1px solid var(--border);
   border-radius: 6px;
   padding: 0.4rem 0.8rem;
-  width: 100%;
+  width: calc(100% - 1.6rem);
   text-align: center;
   transition: all 0.15s;)
 }
