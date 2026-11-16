@@ -95,7 +95,13 @@ body {
   }
 }
 
+.card-section-wrapper {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
 table, th, td {
+  width: 100%;
+  min-width: 10rem;
   border: 1px solid var(--border);
   border-collapse: collapse;
 }

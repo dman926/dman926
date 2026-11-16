@@ -33,10 +33,6 @@ const projects = [
         label: "Ownership",
         text: "Became the sole engineer after the rest of the team was let go, covering new features, infrastructure and deployments, and handling client communication in place of a project manager. Covered by Jest/Vitest unit tests and Playwright end-to-end tests.",
       },
-      {
-        label: "Code Snippet (illustrative)",
-        code: "query Batch($id: ID!, $limit: Int, $nextToken: String) {\n  batch(id: $id) {\n    id\n    status\n    history(limit: $limit, nextToken: $nextToken) {\n      items { step enteredAt operator }\n      nextToken\n    }\n  }\n}",
-      },
     ],
   },
   {
@@ -55,7 +51,7 @@ const projects = [
       "Playwright",
     ],
     metrics: [
-      { value: "500+", label: "Corporate Customers" },
+      { value: "100+", label: "Corporate Customers" },
       { value: "10-1,000", label: "Employees per Customer" },
       { value: "Multi-Tenant", label: "Federated Architecture" },
     ],
@@ -75,10 +71,6 @@ const projects = [
       {
         label: "Multi-Tenancy",
         text: "A federated architecture gives each business customer an isolated portal they can configure and brand themselves. Tested with Jest/Vitest unit tests and Playwright end-to-end tests.",
-      },
-      {
-        label: "Code Snippet (illustrative)",
-        code: "const page = await db.query(\n  `SELECT * FROM results\n   WHERE tenant_id = $1 AND id > $2\n   ORDER BY id LIMIT $3`,\n  [tenantId, cursor, pageSize],\n);",
       },
     ],
   },
@@ -140,7 +132,7 @@ const projects = [
       {
         label: "",
         text: "I'll be coming back to add some of my models and projects here. Stay tuned!",
-      }
+      },
     ],
   },
   {
@@ -155,21 +147,21 @@ const projects = [
     details: [
       {
         label: "Why",
-        text: "I wanted an inline editor like chat boxes on AI platforms, but all I could find were renderers, tokenizers, or side-by-side editors. I tried to build a solution using them, but they got quickly out of hand needing to adjust tokenization logic to better handle editing, namely with handling where the cursor belongs, and was also not very performant since every keystroke demanded a full re-parsing step. So I decided to build my own solution."
+        text: "I wanted an inline editor like chat boxes on AI platforms, but all I could find were renderers, tokenizers, or side-by-side editors. I tried to build a solution using them, but they got quickly out of hand needing to adjust tokenization logic to better handle editing, namely with handling where the cursor belongs, and was also not very performant since every keystroke demanded a full re-parsing step. So I decided to build my own solution.",
       },
       {
         label: "Features",
         text: [
-          '- Only dependency is Svelte for rendering, leaving the parser portable and simple to use',
-          '- Optimized performance through incremental parsing',
-          '- Customizable with extensible block and inline parser rules'
-        ].join('\n')
-      }
+          "- Only dependency is Svelte for rendering, leaving the parser portable and simple to use",
+          "- Optimized performance through incremental parsing",
+          "- Customizable with extensible block and inline parser rules",
+        ].join("\n"),
+      },
     ],
     externalLink: {
-      label: 'View on NPM',
-      url: 'https://www.npmjs.com/package/@dman926/svelte-md'
-    }
+      label: "View on NPM",
+      url: "https://www.npmjs.com/package/@dman926/svelte-md",
+    },
   },
   {
     id: "better-auth-conjoined-email",
@@ -183,7 +175,7 @@ const projects = [
     details: [
       {
         label: "Why",
-        text: `There isn't a clean way to have both the better-auth <a href="https://better-auth.com/docs/plugins/magic-link" target="_blank" rel="noopener noreferrer">magicLink</a> and <a href="https://better-auth.com/docs/plugins/email-otp" target="_blank" rel="noopener noreferrer">emailOTP</a> plugins defined in your auth config and have both fire at the same time, sending a single email with both authentication options, so I made this plugin.`
+        text: `There isn't a clean way to have both the better-auth <a href="https://better-auth.com/docs/plugins/magic-link" target="_blank" rel="noopener noreferrer">magicLink</a> and <a href="https://better-auth.com/docs/plugins/email-otp" target="_blank" rel="noopener noreferrer">emailOTP</a> plugins defined in your auth config and have both fire at the same time, sending a single email with both authentication options, so I made this plugin.`,
       },
       {
         label: "Server Configuration",
@@ -202,7 +194,7 @@ export const auth = betterAuth({
     // magicLink and emailOTP plugins are contained in conjoinedEmailPlugin
     // and do not need to be added
   ],
-});`
+});`,
       },
       {
         label: "Client Configuration",
@@ -216,7 +208,7 @@ export const authClient = createAuthClient({
     // magicLinkClient and emailOTPClient are contained in conjoinedEmailClient
     // and do not need to be added
   ],
-});`
+});`,
       },
       {
         label: "Usage",
@@ -244,45 +236,47 @@ export function SignIn() {
     />
     <button onClick={handleSignIn}>Sign In</button>
   );
-}`
+}`,
       },
       {
         label: "Options",
         text: [
+          '<div class="card-section-wrapper">',
           "<table>",
-            "<tr>",
-            "<th>Option</th>",
-            "<th>Description</th>",
-            "<th>Default</th>",
-            "</tr>",
-            "<tr>",
-            "<td>sendAuthenticationEmail</td>",
-            "<td>Handler to send the authentication email. `email`, `otp`, `magicLink`, and `magicLinkToken` are provided as the first parameter</td>",
-            "<td>*</td>",
-            "</tr>",
-            "<tr>",
-              "<td>otpLength</td>",
-              "<td>The length of the OTP code</td>",
-              "<td>6</td>",
-            "</tr>",
-            "<tr>",
-              "<td>expiresIn</td>",
-              "<td>The time in seconds the magic link and OTP code are valid for. Can also be provided as an object\n`({ magicLink: number; emailOTP: number })`\nto describe each expire time</td>",
-              "<td>600\n(10 minutes)</td>",
-            "</tr>",
-            "<tr>",
-              "<td>allowSimultaneousUse</td>",
-              "<td>When `true`, users can authenticate through both methods, where-as normally when one method is used, the other is invalidated</td>",
-              "<td>false</td>",
-            "</tr>",
-            "</table>"
-        ].join('\n')
-      }
+          "<tr>",
+          "<th>Option</th>",
+          "<th>Description</th>",
+          "<th>Default</th>",
+          "</tr>",
+          "<tr>",
+          "<td>sendAuthenticationEmail</td>",
+          "<td>Handler to send the authentication email. `email`, `otp`, `magicLink`, and `magicLinkToken` are provided as the first parameter</td>",
+          "<td>*</td>",
+          "</tr>",
+          "<tr>",
+          "<td>otpLength</td>",
+          "<td>The length of the OTP code</td>",
+          "<td>6</td>",
+          "</tr>",
+          "<tr>",
+          "<td>expiresIn</td>",
+          "<td>The time in seconds the magic link and OTP code are valid for. Can also be provided as an object\n`({ magicLink: number; emailOTP: number })`\nto describe each expire time</td>",
+          "<td>600\n(10 minutes)</td>",
+          "</tr>",
+          "<tr>",
+          "<td>allowSimultaneousUse</td>",
+          "<td>When `true`, users can authenticate through both methods, where-as normally when one method is used, the other is invalidated</td>",
+          "<td>false</td>",
+          "</tr>",
+          "</table>",
+          "</div>",
+        ].join("\n"),
+      },
     ],
     externalLink: {
-      label: 'View on NPM',
-      url: 'https://www.npmjs.com/package/@dman926/better-auth-conjoined-email'
-    }
+      label: "View on NPM",
+      url: "https://www.npmjs.com/package/@dman926/better-auth-conjoined-email",
+    },
   },
 ];
 
