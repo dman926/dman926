@@ -179,6 +179,7 @@ const projects = [
       },
       {
         label: "Server Configuration",
+        lang: "js",
         code: `// src/server/auth.ts
 import { betterAuth } from "better-auth";
 import { conjoinedEmailPlugin } from "@dman926/better-auth-conjoined-email";
@@ -198,6 +199,7 @@ export const auth = betterAuth({
       },
       {
         label: "Client Configuration",
+        lang: "js",
         code: `// src/client/auth.ts
 import { createAuthClient } from "better-auth/svelte";
 import { conjoinedEmailClient } from "@dman926/better-auth-conjoined-email/client";
@@ -212,6 +214,7 @@ export const authClient = createAuthClient({
       },
       {
         label: "Usage",
+        lang: "jsx",
         code: `// src/routes/some-page.tsx
 import { useCallback, useState } from "react"
 import { authClient } from "src/client/auth";

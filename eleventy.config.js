@@ -1,5 +1,8 @@
-/** @type {import('@11ty/eleventy').Config}  */
+import syntaxHighlight from "@11ty/eleventy-plugin-syntaxhighlight";
+
 export default function (eleventyConfig) {
+	eleventyConfig.addPlugin(syntaxHighlight);
+
   eleventyConfig.setInputDirectory("src");
   eleventyConfig.setOutputDirectory("_site");
   eleventyConfig.addPassthroughCopy("src/styles.css");

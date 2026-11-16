@@ -44,7 +44,11 @@
       <p class="detail-text">{{ detail.text | safe }}</p>
       {% endif %}
       {% if detail.code %}
-      <pre class="detail-code"><code>{{ detail.code }}</code></pre>
+      <div class="detail-code">
+        {% highlight detail.lang %}
+        {{ detail.code | safe }}
+        {% endhighlight %}
+      </div>
       {% endif %}
     </div>
     {% endfor %}
