@@ -1,7 +1,10 @@
 [
-  "TypeScript / SvelteKit",
-  "PostgreSQL / Node.js",
-  "Linux / Docker",
-  "ZFS / Proxmox",
-  "OpenSCAD / BOSL2"
+  "TypeScript / Node.js",
+  "SvelteKit / React / RxJS",
+  "PostgreSQL / DynamoDB",
+  "AWS: Lambda, AppSync, Cognito",
+  "GCP: Cloud Run, Cloud SQL, Pub/Sub",
+  "GraphQL / REST / WebSockets",
+  "Jest / Vitest / Playwright",
+  "Linux / Docker / Proxmox"
 ]

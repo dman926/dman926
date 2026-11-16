@@ -45,7 +45,7 @@ const projects = [
     title: "Biomedical Customer Portal",
     subtitle: "Multi-Tenant Analytics Rebuild",
     description:
-      "Rebuilt a customer portal for exploring experiment results through graphs and tables, serving 500+ corporate customers over a very large combined dataset.",
+      "Rebuilt a customer portal for exploring experiment results through graphs and tables, serving 100+ corporate customers over a very large combined dataset.",
     tags: [
       "TypeScript",
       "PostgreSQL",
