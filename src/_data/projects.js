@@ -125,13 +125,88 @@ const projects = [
     title: "Parametric CAD and Hardware",
     subtitle: "Code-Driven Design",
     description:
-      "Parametric 3D models written as code in OpenSCAD with BOSL2, for enclosures and hardware that can be resized by changing a few variables.",
-    tags: ["OpenSCAD", "BOSL2", "Parametric Design"],
+      "Functional parts designed in OpenSCAD with BOSL2 and 3D printed: home electronics, vehicle fixes and large-format assemblies.",
+    tags: ["OpenSCAD", "3D Printing", "Parametric Design"],
     metrics: [],
     details: [
       {
-        label: "",
-        text: "I'll be coming back to add some of my models and projects here. Stay tuned!",
+        label: "Overview",
+        text: "Parts I needed and couldn't buy, modeled as code so the dimensions are variables I can change and reprint.",
+      },
+    ],
+    models: [
+      {
+        name: "NEMA 5-15P outlet AC power monitor",
+        description: [
+          "A simple board centered around an ESP32C3 microcontroller connected to two 20A AC712 current sensors. Using a known average voltage (120VAC for North America), the power used by the devices connected to each outlet can be individually monitored.",
+          'I use this to watch when my washing machine and dryer stop, which will send a push notification to my phone via <a href="https://www.home-assistant.io/" target="_blank" rel="noopener noreferrer">Home Assistant</a>, making my dumb devices "smart" in a way I can control.',
+        ].join("\n\n"),
+        preview: ["/models/nema_5-15p_ammeter/nema_5-15p_ammeter.stl"],
+        files: [
+          {
+            label: "nema_5-15p_ammeter.stl",
+            path: "/models/nema_5-15p_ammeter/nema_5-15p_ammeter.stl",
+          },
+          {
+            label: "nema_5-15p_ammeter_cover.stl",
+            path: "/models/nema_5-15p_ammeter/nema_5-15p_ammeter_cover.stl",
+          },
+          {
+            label: "nema_5-15p_ammeter.scad",
+            path: "/models/nema_5-15p_ammeter/nema_5-15p_ammeter.scad",
+            note: "Source",
+          },
+        ],
+      },
+      {
+        name: "Miata hood dampers and push pins",
+        material: "TPU + Polycarbonate",
+        description:
+          'Flexible TPU dampers that soften and secure the hood when it closes, with rigid polycarbonate push pins that hold them in place. The pin should be printed horizontally with the "bowl" facing up.',
+        preview: [
+          "/models/miata_hood_damper/hood_damper.stl",
+          "/models/miata_hood_damper/hood_damper_clip.stl",
+        ],
+        files: [
+          {
+            label: "hood_damper.stl",
+            path: "/models/miata_hood_damper/hood_damper.stl",
+            note: "TPU",
+          },
+          {
+            label: "hood_damper_clip.stl",
+            path: "/models/miata_hood_damper/hood_damper_clip.stl",
+            note: "Polycarbonate",
+          },
+          {
+            label: "hood_damper.scad",
+            path: "/models/miata_hood_damper/hood_damper.scad",
+            note: "Source",
+          },
+          {
+            label: "hood_damper_clip.scad",
+            path: "/models/miata_hood_damper/hood_damper_clip.scad",
+            note: "Source",
+          },
+        ],
+      },
+      {
+        name: "FJ Cruiser e-brake bracket bushing",
+        material: "TPU",
+        description:
+          "The rough metal factory bracket have no bushing, and the e-brake cables were wearing against them. This bushing, printed in two halves and joined with high-temp zip-ties after being put in place, provides a tight but forgiving surface for the cables to slide against.",
+        preview: ["/models/fj_ebrake_cable_bushing/fj_ebrake_bushing.stl"],
+        files: [
+          {
+            label: "fj_ebrake_bushing.stl",
+            path: "/models/fj_ebrake_cable_bushing/fj_ebrake_bushing.stl",
+          },
+          {
+            label: "fj_ebrake_bushing.scad",
+            path: "/models/fj_ebrake_cable_bushing/fj_ebrake_bushing.scad",
+            note: "Source",
+          },
+        ],
       },
     ],
   },

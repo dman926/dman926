@@ -53,6 +53,37 @@
     </div>
     {% endfor %}
 
+    {% if project.models %}
+    <div class="detail-section" style="margin-top: 1.5rem;">
+      <div class="detail-label">Models</div>
+      <div class="model-list">
+        {% for model in project.models %}
+        <article class="model">
+          <div class="model-head">
+            <h3 class="model-name">{{ model.name }}</h3>
+            {% if model.material %}<span class="tag">{{ model.material }}</span>{% endif %}
+          </div>
+          <p class="detail-text">{{ model.description | safe }}</p>
+
+          {% if model.preview %}
+          <button type="button" class="model-preview-btn" aria-expanded="false">Preview 3D</button>
+          <div class="model-viewer" data-src="{{ model.preview | join('|') }}" hidden></div>
+          {% endif %}
+
+          <ul class="file-list">
+            {% for file in model.files %}
+            <li>
+              <a href="{{ file.path }}" download>{{ file.label }}</a>
+              <span class="file-meta">{{ file.note }}{{ " · " if file.note }}{{ file.path | fileSize }}</span>
+            </li>
+            {% endfor %}
+          </ul>
+        </article>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
     {% if project.externalLink %}
     <a class="overlay-external-link-btn" href="{{ project.externalLink.url }}" target="_blank"
       rel="noopener noreferrer">
